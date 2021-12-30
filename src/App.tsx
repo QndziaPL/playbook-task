@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react"
+import { SingleTransaction } from "./types/types"
+import { AppContainer } from "./App.styled"
+import TransactionCreationPanel from "./components/TransactionCreationPanel/TransactionCreationPanel"
+import TransactionTable from "./components/TransactionTable/TransactionTable"
 
-function App() {
+const App = () => {
+  const [nextId, setNextId] = useState(1)
+  const [transactionList, setTransactionList] = useState<SingleTransaction[]>(
+    [],
+  )
+  const [rate, setRate] = useState(4.382)
+
+  const addTransaction = (transaction: { title: string; amount: number }) => {
+    setTransactionList((prev) => [...prev, { ...transaction, id: nextId }])
+    setNextId((prev) => prev + 1)
+  }
+
+  const deleteTransaction = (id: number) => {
+    const index = transactionList.findIndex(({ id: _id }) => id === _id)
+    const newArray = [...transactionList]
+    newArray.splice(index, 1)
+    setTransactionList(newArray)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <AppContainer>
+      <TransactionCreationPanel
+        addTransaction={addTransaction}
+        rate={rate}
+        setRate={setRate}
+      />
+      <TransactionTable
+        rate={rate}
+        transactionList={transactionList}
+        deleteTransaction={deleteTransaction}
+      />
+    </AppContainer>
+  )
 }
 
-export default App;
+export default App
